@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<title> Person info </title>
+<body> 
+{% include 'accounts/parts/user.html' %}
+{% include 'core/parts/menu.html' %}
+<form method='POST' > {% csrf_token %} 
+<table>
+		<tr> 
+			<td> <h3> Person info </h3> </td>
+			<td> </td> </tr>	
+		<tr> 
+			<td> name</td>
+			<td> <input type='text' name='name' value='{{person.name}}'/> </td> </tr>
+		<tr>
+			<td> patronymic </td>
+			<td>  <input type='text' name='patronymic' value='{{ person.patronymic }}'/> </td> </tr>
+		<tr>
+			<td> surname </td>
+			<td>  <input type='text' name='surname' value='{{ person.surname }}'/> </td> </tr>
+		<tr> 
+			<td colspan='2'> <strong> Contacts </strong> </td> </tr>
+		<tr>
+			<td> phone number </td>
+			<td> <input type='text' name='first_phone_number' value='{{ person.first_phone_number}}'/></td> </tr>
+		<tr> 
+			<td> phone number </td>
+			<td> <input type='text' name='second_phone_number' value='{{ person.second_phone_number }}'/> </td> </tr>
+		<tr> 
+			<td> email </td>
+			<td> <input type='text' name='first_email' value='{{ person.first_email }}'/> </td> </tr>
+		<tr> 
+			<td> email </td>
+			<td> <input type='text' name='second_email' value='{{ person.second_email }}' /> </td> </tr>
+		<tr> 
+			<td colspan='2'> <textarea  name='simple_comment' rows='5' cols='60'>{{person.simple_comment}}</textarea> </td> </tr>
+		<tr> <td></td>
+			<td> <input type='submit' value='Save'/> </td></tr>
+</table>
+</form>
+</body>
+</html>

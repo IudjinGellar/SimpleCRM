@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<title> Logout page </title>
+<body>
+{% if user.is_authenticated %}
+<form method='post'> {% csrf_token %}
+	<p> {{message}} </p>
+	<p> <input type='submit' name='logout' value='Logout'/> </p>
+</form>
+{% else %}
+	<p> You logout from system </p>
+	<p> For access base - <a href="url 'login'"> login </a> </p>
+{% endif %}
+</body>
+</html>

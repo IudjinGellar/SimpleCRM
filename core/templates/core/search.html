@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<title> Search </title>
+<body> 
+{% include 'accounts/parts/user.html' %}
+{% include 'core/parts/menu.html' %}
+<form method='get'>
+<table> <tr>
+	<td> <strong> Search </strong> </td> 
+	<td> <input type='text' name='search_value' value='Name...' /> </td>
+	<td> <input type='submit' value='search' /> </td>
+</tr> </table>
+</form>
+
+<table> <tr>
+	<td> <a href="{% url 'search' current_list|add:'1' %}"> Next page </a> </td></tr>
+</table>
+<ul> {% for man in peoples %}
+
+	<table> 
+		<tr> 
+			<td> <a href="{% url 'person' man.id %}"> 
+			{{man.surname}} {{man.name}} {{man.patronymic}} </td>
+			<tr>
+			<td> {{man.first_phone_number}} {{man.second_phone_number}} </td></tr>
+			<tr> <td> {{man.simple_comment}} </td> </tr>
+			<tr> <td> </td></tr>
+</tr>
+</table>
+{% empty %} <li> Not found records for {{search_value}} </li>
+{% endfor %}
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+<table> <tr> 
+	<td> <a href="{% url 'search' '0' %}"> Search </a> </td>
+	<td> <a href="{% url 'add_person' '0' %}"> New Person </a> </td>
+		</tr> 
+	<tr> 
+		<td colspan='4'> {% if message %}
+		<p >{{message}}</p>
+		{% endif %} </td> </tr>
+</table>
