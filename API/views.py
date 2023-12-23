@@ -2,17 +2,17 @@ from django.http import HttpResponse, JsonResponse
 # from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 from core.models import Person, Comment, Functions
-from API.serializers import PersonSerializer, AllPersonsSerializer, CommentSerializer
+from API.serializers import PersonSerializer, AllPersonsSerializer, \
+    CommentSerializer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.middleware import csrf
 
 
 class APIAuth(APIView):
+
     def post(self, request):
-        print('in post')
         message = Functions.get_message(request.POST)
-        print(message)
         username = message['username']
         password = message['password']
         if username and password:
@@ -29,7 +29,9 @@ class APIAuth(APIView):
             return HttpResponse(status=400)
 
 
-class APILogOut(APIView, LoginRequiredMixin):
+class APILogOut(LoginRequiredMixin, APIView):
+    login_url = 'isauth'
+
     def post(self, request):
         logout(request)
         return HttpResponse(status=200)
@@ -45,7 +47,9 @@ class APIIsAuth(APIView):
                                 'authenticated': 'False'})
 
 
-class APIAllPersonsView(APIView):
+class APIAllPersonsView(LoginRequiredMixin, APIView):
+    login_url = 'isauth'
+
     def get(self, request):
         'предоставить все записи Person в виде id и ФИО'
         persons = Person.objects.all()
@@ -53,7 +57,9 @@ class APIAllPersonsView(APIView):
         return JsonResponse(serializer.data, safe=False)
 
 
-class APIPersonView(APIView):
+class APIPersonView(LoginRequiredMixin, APIView):
+    login_url = 'isauth'
+
     def get_person(self, id):
         try:
             person = Person.objects.get(id=id)
@@ -71,10 +77,11 @@ class APIPersonView(APIView):
             return HttpResponse(status=404)
 
 
-class APICommentsView(APIView):
+class APICommentsView(LoginRequiredMixin, APIView):
+    login_url = 'isauth'
+
     def get_comments(self, person_id):
         comments = Comment.objects.filter(made_for=person_id)
-        print(comments)
         return comments
 
     def get(self, request, person_id):
@@ -82,5 +89,6 @@ class APICommentsView(APIView):
         comments = self.get_comments(person_id)
         if comments:
             serializer = CommentSerializer(comments, many=True)
-            print(serializer.data)
             return JsonResponse(serializer.data, safe=False)
+        else:
+            return HttpResponse(status=404)

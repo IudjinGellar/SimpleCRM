@@ -5,7 +5,7 @@ from core.models import Comment, Person
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = Comment.attrs
+        fields = Comment.get_fields()
 
 
 class AllPersonsSerializer(serializers.ModelSerializer):
@@ -17,4 +17,4 @@ class AllPersonsSerializer(serializers.ModelSerializer):
 class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
-        fields = Person.attrs
+        fields = Person.get_fields()
