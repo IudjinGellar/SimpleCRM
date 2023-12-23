@@ -19,33 +19,33 @@ class test_API(TestCase):
         message = {
             'username': 'test',
             'password': 'test'}
-        response = self.client.post('/api/auth', message)
+        response = self.client.post('/api/auth/', message)
         token = response.json()
         return token
 
     def isauth(self):
-        response = self.client.get('/api/isauth')
+        response = self.client.get('/api/isauth/')
         return eval(response.json()['authenticated'])
 
     def test_auth_logout(self):
         token = self.auth()
         self.assertTrue('csrfmiddlewaretoken' in token.keys())
         self.assertTrue(self.isauth())
-        self.client.post('/api/logout', token)
+        self.client.post('/api/logout/', token)
         self.assertFalse(self.isauth())
 
     def test_you_shall_not_pass(self):
         GET = self.client.get
         POST = self.client.post
         self.assertFalse(self.isauth())
-        self.assertEqual(POST('/api/logout').status_code, 302)
-        self.assertEqual(GET('/api/all').status_code, 302)
-        self.assertEqual(GET('/api/person/1').status_code, 302)
-        self.assertEqual(GET('/api/comments/1').status_code, 302)
+        self.assertEqual(POST('/api/logout/').status_code, 302)
+        self.assertEqual(GET('/api/all/').status_code, 302)
+        self.assertEqual(GET('/api/person/1/').status_code, 302)
+        self.assertEqual(GET('/api/comments/1/').status_code, 302)
 
     def test_all_view(self):
         token = self.auth()
-        response = self.client.get('/api/all', token)
+        response = self.client.get('/api/all/', token)
         response_data = response.json()
         persons_db = Person.objects.all().only('surname')
         surnames_db = [person.surname for person in persons_db]
@@ -54,7 +54,7 @@ class test_API(TestCase):
 
     def test_api_person_view(self):
         token = self.auth()
-        response = self.client.get('/api/person/1', token)
+        response = self.client.get('/api/person/1/', token)
         response_data = response.json()
         person = Person.objects.get(id=1)
         person_data = person.get_attrs_values()
@@ -63,7 +63,7 @@ class test_API(TestCase):
 
     def test_comments_view(self):
         token = self.auth()
-        response = self.client.get('/api/comments/1', token)
+        response = self.client.get('/api/comments/1/', token)
         response_data = response.json()
         person = Person.objects.get(id=1)
         for comment in response_data:
@@ -74,3 +74,11 @@ class test_API(TestCase):
         comments_data = [comment.comment for comment in comments]
         for sentence in response_comments:
             self.assertTrue(sentence in comments_data)
+
+    def test_swagger(self):
+        swagger_urls = ['/api/swagger/',
+                        '/api/swagger.json/',
+                        '/api/redoc/']
+        for adress in swagger_urls:
+            response = self.client.get(adress)
+            self.assertEqual(response.status_code, 200)

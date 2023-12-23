@@ -12,33 +12,44 @@ from django.middleware import csrf
 class APIAuth(APIView):
 
     def post(self, request):
+        ''' аутентификация сессии,
+        возвращает токен для последующих запросов
+        требует {'username':'', 'password':''} '''
         message = Functions.get_message(request.POST)
-        username = message['username']
-        password = message['password']
-        if username and password:
-            user = authenticate(username=username, password=password)
-            if user:
-                login(request, user)
-                token = csrf.get_token(request)
-                response = JsonResponse({'csrfmiddlewaretoken': str(token)})
-                response['status'] = 200
-                return response
-            else:
-                return HttpResponse(status=404)
-        else:
-            return HttpResponse(status=400)
+        try:
+            username = message['username']
+            password = message['password']
+            if username and password:
+                user = authenticate(username=username, password=password)
+                if user:
+                    login(request, user)
+                    token = csrf.get_token(request)
+                    response = JsonResponse(
+                        {'csrfmiddlewaretoken': str(token),
+                         'status': 200})
+                else:
+                    response = JsonResponse(
+                        {'comment': 'Wrong data',
+                         'status': 404})
+        except KeyError:
+            response = JsonResponse(
+                {'status': 400,
+                 'comment': 'No data'})
+        return response
 
 
 class APILogOut(LoginRequiredMixin, APIView):
     login_url = 'isauth'
 
     def post(self, request):
+        # выход из учетной записи
         logout(request)
         return HttpResponse(status=200)
 
 
 class APIIsAuth(APIView):
     def get(self, request):
+        'проверка авторизации пользователя'
         if request.user.is_authenticated:
             return JsonResponse({'user': str(request.user),
                                 'authenticated': 'True'})
