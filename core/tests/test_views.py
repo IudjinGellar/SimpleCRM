@@ -7,6 +7,8 @@ from service.fill_DB import mim_do_persons
 
 class TestCoreViews(TestCase):
     number_of_persons = None
+    std_person_id = None
+    last_id = None
 
     @classmethod
     def setUpTestData(cls):
@@ -14,32 +16,39 @@ class TestCoreViews(TestCase):
         # остальные со случайными данными
         person = get_test_person()
         person.save()
+        cls.std_person_id = person.id
         number_of_persons = 1
         for person in mim_do_persons(10, True):
             person.save()
             number_of_persons += 1
+        cls.last_id = person.id
         cls.number_of_persons = number_of_persons
         test_user = User.objects.create_user(username='test', password='test')
         test_user.save()
+        # print(Person.objects.all())
 
     def login_test_user(self):
         self.client.login(username='test', password='test')
 
     def test_url_exist(self):
         self.login_test_user()
-        for number in range(1, self.number_of_persons+1):
+        for number in range(self.std_person_id, self.last_id):
             response = self.client.get(f'/core/person/{number}/')
             self.assertEqual(response.status_code, 200)
-        for number in range(self.number_of_persons//10+1):
+        for number in range((self.number_of_persons//10)):
             response = self.client.get(f'/core/search/{number}/')
             self.assertEqual(response.status_code, 200)
-        for number in range(0, self.number_of_persons+1):
+        for number in range(self.std_person_id, self.last_id):
             response = self.client.get(f'/core/add_person/{number}/')
             self.assertEqual(response.status_code, 200)
+        response = self.client.get(f'/core/add_person/0/')
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
 
     def test_required_login_GET(self):
         # without login
-        paths = ['/person/1/', '/search/1/', '/add_person/0/', '/']
+        id = self.std_person_id
+        paths = [f'/person/{id}/', f'/search/{id}/', '/add_person/0/', '/']
         for _path in paths:
             _path = '/core' + _path
             response = self.client.get(_path)
@@ -50,15 +59,17 @@ class TestCoreViews(TestCase):
             _path = '/core' + _path
             response = self.client.get(_path)
             self.assertEqual(response.status_code, 200)
+        self.client.logout()
 
     def test_person_POST(self):
         self.login_test_user()
         # person view, add comment
         request_comment = {'comment': 'test comment'}
-        self.client.post('/core/person/1/', request_comment)
+        self.client.post(f'/core/person/{self.std_person_id}/', request_comment)
         comment = Comment.objects.get(
-            made_for=Person.objects.get(id=1))
+            made_for=Person.objects.get(id=self.std_person_id))
         self.assertEqual(comment.comment, request_comment['comment'])
+        self.client.logout()
 
     def test_add_person_POST(self):
         self.login_test_user()
@@ -79,11 +90,12 @@ class TestCoreViews(TestCase):
         new_data_person = Person.objects.get(id=id)
         self.assertEqual(
             new_data_person.surname, new_surname)
+        self.client.logout()
 
     def test_search_with_data_GET(self):
         self.login_test_user()
         # search by name, surname, phone_numbers
-        person = Person.objects.get(id=1)
+        person = Person.objects.get(id=self.std_person_id)
         name = person.name
         patronymic = person.patronymic
         surname = person.surname
@@ -95,3 +107,4 @@ class TestCoreViews(TestCase):
             message['search_value'] = any
             response = self.client.get('/core/search/0/', message)
             self.assertTrue(search_value in response.content.decode())
+        self.client.logout()

@@ -6,12 +6,18 @@ from service.fill_DB import mim_do_persons, do_comments
 
 
 class test_API(TestCase):
+    std_person_id = None
+    std_comment_id = None
 
     @classmethod
     def setUpTestData(cls):
         User.objects.create_user(username='test', password='test')
-        get_test_person().save()
-        get_test_comment().save()
+        person = get_test_person()
+        person.save()
+        cls.std_person_id = person.id
+        comment = get_test_comment()
+        comment.save()
+        cls.std_comment_id = comment.id
         mim_do_persons(10)
         do_comments(50)
 
@@ -40,8 +46,8 @@ class test_API(TestCase):
         self.assertFalse(self.isauth())
         self.assertEqual(POST('/api/logout/').status_code, 302)
         self.assertEqual(GET('/api/all/').status_code, 302)
-        self.assertEqual(GET('/api/person/1/').status_code, 302)
-        self.assertEqual(GET('/api/comments/1/').status_code, 302)
+        self.assertEqual(GET(f'/api/person/{self.std_person_id}/').status_code, 302)
+        self.assertEqual(GET(f'/api/comments/{self.std_comment_id}/').status_code, 302)
 
     def test_all_view(self):
         token = self.auth()
@@ -54,7 +60,7 @@ class test_API(TestCase):
 
     def test_api_person_view(self):
         token = self.auth()
-        response = self.client.get('/api/person/1/', token)
+        response = self.client.get(f'/api/person/{self.std_person_id}/', token)
         response_data = response.json()
         person = Person.objects.get(id=1)
         person_data = person.get_attrs_values()
@@ -63,9 +69,9 @@ class test_API(TestCase):
 
     def test_comments_view(self):
         token = self.auth()
-        response = self.client.get('/api/comments/1/', token)
+        response = self.client.get(f'/api/comments/{self.std_person_id}/', token)
         response_data = response.json()
-        person = Person.objects.get(id=1)
+        person = Person.objects.get(id=self.std_person_id)
         for comment in response_data:
             self.assertEqual(comment['made_for'], person.id)
             self.assertTrue(comment['comm_date'])

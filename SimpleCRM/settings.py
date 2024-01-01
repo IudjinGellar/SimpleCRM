@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'core.apps.CoreConfig',
     'accounts.apps.AccountsConfig',
     'rest_framework',
@@ -80,8 +81,15 @@ WSGI_APPLICATION = 'SimpleCRM.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'scrm_db',
+        'USER': 'scrm',
+        'PASSWORD': 'scrm',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'TEST': {
+            'TEMPLATE': 'test_db',
+        }
     }
 }
 

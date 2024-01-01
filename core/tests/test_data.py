@@ -14,6 +14,6 @@ def get_test_person():
 
 
 def get_test_comment():
-    comment = Comment(made_for=Person.objects.get(id=1),
+    comment = Comment(made_for=Person.objects.all()[0],
                       comment='This is a test comment')
     return comment
