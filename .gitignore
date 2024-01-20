@@ -1,4 +1,7 @@
 __pycache__/
 migrations/
+.venv/
+poetry.lock
 db.sqlite3
 .pyc
+objects_counter.txt

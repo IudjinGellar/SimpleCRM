@@ -143,5 +143,15 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# RABBITMQ
+RABBITMQ_HOST = 'localhost'
+RABBITMQ_PORT = 5672
+RABBITMQ_USERNAME = 'scrm'
+RABBITMQ_PASSWORD = 'scrm'
+
 # CELERY
-CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_BROKER_URL = 'amqp://%s:%s@%s:%s//'% (
+    RABBITMQ_USERNAME,
+    RABBITMQ_PASSWORD,
+    RABBITMQ_HOST,
+    RABBITMQ_PORT)

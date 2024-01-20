@@ -1,4 +1,5 @@
 from django.test import TestCase
+from unittest.mock import patch
 from django.contrib.auth.models import User
 from core.models import Person, Comment
 from core.tests.test_data import get_test_person
@@ -41,7 +42,7 @@ class TestCoreViews(TestCase):
         for number in range(self.std_person_id, self.last_id):
             response = self.client.get(f'/core/add_person/{number}/')
             self.assertEqual(response.status_code, 200)
-        response = self.client.get(f'/core/add_person/0/')
+        response = self.client.get('/core/add_person/0/')
         self.assertEqual(response.status_code, 200)
         self.client.logout()
 
@@ -65,7 +66,8 @@ class TestCoreViews(TestCase):
         self.login_test_user()
         # person view, add comment
         request_comment = {'comment': 'test comment'}
-        self.client.post(f'/core/person/{self.std_person_id}/', request_comment)
+        self.client.post(f'/core/person/{self.std_person_id}/',
+                         request_comment)
         comment = Comment.objects.get(
             made_for=Person.objects.get(id=self.std_person_id))
         self.assertEqual(comment.comment, request_comment['comment'])
@@ -108,3 +110,15 @@ class TestCoreViews(TestCase):
             response = self.client.get('/core/search/0/', message)
             self.assertTrue(search_value in response.content.decode())
         self.client.logout()
+
+    @patch('core.tasks.statistic.apply_async')
+    def test_statistic_view(self, statistic):
+        self.login_test_user()
+        response = self.client.get('/core/worker/')
+        self.assertEquals(response.status_code, 200)
+
+    @patch('core.tasks.send_message.apply_async')
+    def test_sender_view(self, send_message):
+        self.login_test_user()
+        response = self.client.get('/core/sender/')
+        self.assertEquals(response.status_code, 200)
