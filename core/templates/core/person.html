@@ -4,37 +4,10 @@
 <body> 
 {% include 'accounts/parts/user.html' %}
 {% include 'core/parts/menu.html' %}
+<a href="{% url 'add_person' id %}"> Redact </a> </td></tr>
 <table>
-		<tr> 
-			<td> <h3> Person info </h3> </td>
-			<td> 
-				<a href="{% url 'add_person' person.id%}"> Redact </a> </td></tr>
-		<tr> 
-			<td> name </td>
-			<td> {{ person.name }} </td> </tr>
-		<tr>
-			<td> patronymic </td>
-			<td> {{ person.patronymic }} </td> </tr>
-		<tr>
-			<td> surname </td>
-			<td> {{ person.surname }} </td> </tr>
-		<tr> 
-			<td colspan='2'> <strong> Contacts </strong> </td> </tr>
-		<tr>
-			<td> phone number </td>
-			<td> {{ person.first_phone_number}} </td> </tr>
-		<tr> 
-			<td> phone number </td>
-			<td> {{ person.second_phone_number }} </td> </tr>
-		<tr> 
-			<td> email </td>
-			<td> {{ person.first_email }} </td> </tr>
-		<tr> 
-			<td> email </td>
-			<td> {{ person.second_email }} </td> </tr>
-		<tr> 
-			<td colspan='2'> <textarea rows='5' cols='60'> {{person.simple_comment}} </textarea> </td> </tr>
-</table>  
+    {{ person_form.as_table }}
+</table> 
 <form  method='post'> {% csrf_token %}
 	<p> <strong> New comment </strong> </p>
 	 <p> <textarea name='comment' rows='5' cols='60'> Type... </textarea> </p>

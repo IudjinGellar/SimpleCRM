@@ -17,6 +17,9 @@ class Comment(models.Model):
     comm_date = models.DateField(auto_now=True)
     comment = models.TextField()
 
+    class Meta:
+        ordering = ['-comm_date']
+
     @classmethod
     def get_fields(cls):
         fields = [field.name for field in cls._meta.get_fields()]
@@ -50,6 +53,9 @@ class Person(models.Model):
     attrs = ['id', 'name', 'patronymic', 'surname',
              'first_phone_number', 'second_phone_number', 'first_email',
              'second_email', 'simple_comment']
+
+    class Meta:
+        ordering = ['surname']
 
     @classmethod
     def get_fields(cls):

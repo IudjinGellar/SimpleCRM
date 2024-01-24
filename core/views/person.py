@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from ..models import Person, Comment, Functions
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
+from core.forms import PersonForm
 
 
 class PersonView(LoginRequiredMixin, View):
@@ -12,8 +13,10 @@ class PersonView(LoginRequiredMixin, View):
         'display Person data and his Comments, message if have it'
         dictionary = {}
         person = Person.objects.get(id=id)
+        person_form = PersonForm(instance=person)
         dictionary['comments'] = (Comment.objects.filter(made_for_id=id) or [])
-        dictionary['person'] = person.get_attrs_values()
+        dictionary['person_form'] = person_form
+        dictionary['id'] = id
         if 'message' in request.GET.keys():
             dictionary['message'] = \
                 Functions.get_message(request.GET)['message']

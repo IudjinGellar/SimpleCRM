@@ -12,9 +12,7 @@ from django.middleware import csrf
 class APIAuth(APIView):
 
     def post(self, request):
-        ''' аутентификация сессии,
-        возвращает токен для последующих запросов
-        требует {'username':'', 'password':''} '''
+        'аутентификация сессии'
         message = Functions.get_message(request.POST)
         try:
             username = message['username']
