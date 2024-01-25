@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "scrm"
+name = "simplecrm"
 version = "0.1.0"
 description = ""
 authors = ["Iudjin <iudjingellar@gmail.com>"]

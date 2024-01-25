@@ -60,7 +60,7 @@ class Person(models.Model):
     @classmethod
     def get_fields(cls):
         fields = [field.name for field in cls._meta.get_fields()
-                  if field.name != 'comment']
+                  if field.name not in ('comment', 'personfile')]
         return fields
 
     def __str__(self):
@@ -83,3 +83,9 @@ class Person(models.Model):
             if attr in self.attrs:
                 exec('self.'+attr+'=post_attrs[attr]')
         return self
+
+
+class PersonFile(models.Model):
+    name = models.CharField(max_length=100)
+    file = models.FileField(upload_to='personfile/')
+    owner = models.ForeignKey(to='Person', on_delete=models.PROTECT)

@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
-from ..models import Person, Comment, Functions
+from ..models import Person, Comment, Functions, PersonFile
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from core.forms import PersonForm
+from core.forms import PersonForm, PersonFileForm
 
 
 class PersonView(LoginRequiredMixin, View):
@@ -17,6 +17,9 @@ class PersonView(LoginRequiredMixin, View):
         dictionary['comments'] = (Comment.objects.filter(made_for_id=id) or [])
         dictionary['person_form'] = person_form
         dictionary['id'] = id
+        files = PersonFile.objects.filter(owner_id=person) or None
+        if files:
+            dictionary['files'] = files
         if 'message' in request.GET.keys():
             dictionary['message'] = \
                 Functions.get_message(request.GET)['message']
@@ -32,4 +35,18 @@ class PersonView(LoginRequiredMixin, View):
         person = Person.objects.get(id=id)
         if 'comment' in message:
             new_comment(message['comment'], person)
-        return redirect(f'/person/{id}')
+            message = 'Add new comment'
+        elif 'filename' in message:
+            try:
+                file = request.FILES['file']
+                if file:
+                    new_file = PersonFile(name=message['filename'],
+                                          file=file,
+                                          owner=person)
+                    new_file.save()
+                    message = 'Add file'
+                else:
+                    message = 'No data!'
+            except Exception:
+                message = 'Exception on save'
+        return redirect(f'/person/{id}/?message={message}')

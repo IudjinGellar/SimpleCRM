@@ -5,9 +5,23 @@
 {% include 'accounts/parts/user.html' %}
 {% include 'core/parts/menu.html' %}
 <a href="{% url 'add_person' id %}"> Redact </a> </td></tr>
+<!-- Person data -->
 <table>
     {{ person_form.as_table }}
 </table> 
+<!-- File data -->
+<form method="POST" enctype="multipart/form-data"> {% csrf_token %}
+    <!-- {{ file_form }} -->
+    <p> <input type='file' name='file'/></p>
+    <p> <input type='text' name='filename'/> </p>
+    <p> <input type="submit" value="Upload"/> </p>
+</form>
+
+{% for file in files %}
+    <li>{{ file.name }} - <a href="{{ file.file.url }}">Download</a></li>
+{% empty %} <li>No files yet</li>
+{% endfor %}
+<!-- Comment data --> 
 <form  method='post'> {% csrf_token %}
 	<p> <strong> New comment </strong> </p>
 	 <p> <textarea name='comment' rows='5' cols='60'> Type... </textarea> </p>
