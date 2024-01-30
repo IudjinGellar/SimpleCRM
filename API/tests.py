@@ -35,7 +35,7 @@ class test_API(TestCase):
 
     def test_auth_logout(self):
         token = self.auth()
-        self.assertTrue('csrfmiddlewaretoken' in token.keys())
+        self.assertTrue('X-CSRFToken' in token.keys())
         self.assertTrue(self.isauth())
         self.client.post('/api/logout/', token)
         self.assertFalse(self.isauth())

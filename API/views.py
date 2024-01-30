@@ -36,7 +36,7 @@ class APIAuth(APIView):
         return response
 
 
-class APILogOut(APIView):
+class APILogOut(LoginRequiredMixin, APIView):
     login_url = 'isauth'
 
     def post(self, request):
