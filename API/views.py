@@ -23,7 +23,7 @@ class APIAuth(APIView):
                     login(request, user)
                     token = csrf.get_token(request)
                     response = JsonResponse(
-                        {'csrfmiddlewaretoken': str(token),
+                        {'X-CSRFToken': str(token),
                          'status': 200})
                 else:
                     response = JsonResponse(
@@ -36,7 +36,7 @@ class APIAuth(APIView):
         return response
 
 
-class APILogOut(LoginRequiredMixin, APIView):
+class APILogOut(APIView):
     login_url = 'isauth'
 
     def post(self, request):
